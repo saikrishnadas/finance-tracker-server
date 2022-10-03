@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 require("dotenv").config();
+const csrf = require("csurf");
+const cookieParser = require("cookie-parser");
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -22,6 +24,9 @@ app.use(
 
 const authRoutes = require("./routes/auth");
 
+// setup route middlewares
+const csrfProtection = csrf({ cookie: true });
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(
@@ -33,7 +38,20 @@ app.use(
 	})
 );
 
-app.use(authRoutes);
+// parse cookies
+// we need this because "cookie" is true in csrfProtection
+app.use(cookieParser());
+
+//send csrf token
+app.get("/getCsrf", csrfProtection, (req, res, next) => {
+	res.send({ csrfToken: req.csrfToken() });
+});
+
+app.post("/testCsrf", csrfProtection, function (req, res) {
+	res.send("data is being processed");
+});
+
+app.use(csrfProtection, authRoutes);
 
 mongoose
 	.connect(MONGODB_URI)

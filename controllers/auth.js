@@ -16,7 +16,7 @@ exports.postRegister = (req, res, next) => {
 
 	User.findOne({ email: email }).then((userDoc) => {
 		if (userDoc) {
-			return res.send("User already exsist");
+			return res.status(403).json({ error: "User already exsist" });
 		}
 		if (password === confirmPassword) {
 			return bcrypt
@@ -35,7 +35,7 @@ exports.postRegister = (req, res, next) => {
 				})
 				.catch((err) => console.log(err));
 		} else {
-			res.send("passwords doest match!");
+			return res.status(403).json({ error: "passwords does not match!" });
 		}
 	});
 };

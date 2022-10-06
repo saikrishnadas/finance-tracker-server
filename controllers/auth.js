@@ -1,5 +1,13 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
+// const nodemailer = require("nodemailer");
+// const sendGridTransport = require("nodemailer-sendgrid-transport");
+
+// const transporter = nodemailer.createTransport(sendGridTransport({
+// 	auth:{
+// 		api_key:""
+// 	}
+// }))
 
 exports.postRegister = (req, res, next) => {
 	const email = req.body.email;
@@ -38,7 +46,7 @@ exports.postLogin = (req, res, next) => {
 	User.findOne({ email: email })
 		.then((user) => {
 			if (!user) {
-				return res.send("No user exsist!!");
+				return res.status(403).json({ error: "User does not exist!" });
 			}
 			bcrypt
 				.compare(password, user.password)
@@ -52,7 +60,7 @@ exports.postLogin = (req, res, next) => {
 							return res.send(req.session.isLoggedIn);
 						});
 					}
-					return res.send("Passwords doesn't match!");
+					return res.status(403).json({ error: "Passwords doesn't match!" });
 				})
 				.catch((err) => console.log(err));
 		})

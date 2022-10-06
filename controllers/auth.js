@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
+const { validationResult } = require("express-validator/check");
 // const nodemailer = require("nodemailer");
 // const sendGridTransport = require("nodemailer-sendgrid-transport");
 
@@ -13,6 +14,11 @@ exports.postRegister = (req, res, next) => {
 	const email = req.body.email;
 	const password = req.body.password;
 	const confirmPassword = req.body.confirmPassword;
+
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(422).json({ error: errors.array()[0].msg });
+	}
 
 	User.findOne({ email: email }).then((userDoc) => {
 		if (userDoc) {
@@ -43,6 +49,12 @@ exports.postRegister = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
 	const email = req.body.email;
 	const password = req.body.password;
+
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(422).json({ error: errors.array()[0].msg });
+	}
+
 	User.findOne({ email: email })
 		.then((user) => {
 			if (!user) {
@@ -60,7 +72,7 @@ exports.postLogin = (req, res, next) => {
 							return res.send(req.session.isLoggedIn);
 						});
 					}
-					return res.status(403).json({ error: "Passwords doesn't match!" });
+					return res.status(403).json({ error: "Invalid Password!" });
 				})
 				.catch((err) => console.log(err));
 		})

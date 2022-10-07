@@ -53,9 +53,17 @@ app.post("/testCsrf", csrfProtection, function (req, res) {
 
 app.use(csrfProtection, authRoutes);
 
+app.use((error, req, res, next) => {
+	res.status(500).json({ error: "Error Occured! Please try after sometime" });
+});
+
 mongoose
 	.connect(MONGODB_URI)
 	.then(() => {
 		app.listen(3000);
 	})
-	.catch((err) => console.log(err));
+	.catch((err) => {
+		res
+			.status(500)
+			.json({ error: "Failed to connect to database, Please try again later" });
+	});

@@ -37,9 +37,13 @@ exports.postRegister = (req, res, next) => {
 						.then((result) => {
 							return res.send("User created!");
 						})
-						.catch((err) => console.log(err));
+						.catch((err) => {
+							throw new Error(err);
+						});
 				})
-				.catch((err) => console.log(err));
+				.catch((err) => {
+					throw new Error(err);
+				});
 		} else {
 			return res.status(403).json({ error: "passwords does not match!" });
 		}
@@ -74,14 +78,22 @@ exports.postLogin = (req, res, next) => {
 					}
 					return res.status(403).json({ error: "Invalid Password!" });
 				})
-				.catch((err) => console.log(err));
+				.catch((err) => {
+					throw new Error(err);
+				});
 		})
-		.catch((err) => console.log(err));
+		.catch((err) => {
+			const error = new Error(err);
+			error.httpStatusCode = 500;
+			next(error);
+		});
 };
 
 exports.postLogout = (req, res, next) => {
 	req.session.destroy((err) => {
-		console.log(err);
-		res.send("user logged out!");
+		if (!err) {
+			return res.send("user logged out!");
+		}
+		throw new Error(err);
 	});
 };

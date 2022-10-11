@@ -12,8 +12,7 @@ router.post(
 			"password",
 			"Incorrect password! Password must be more than 7 characters"
 		)
-			.isLength({ min: 8 })
-			.isLength({ max: 24 })
+			.isLength({ min: 8, max: 24 })
 			.trim(),
 	],
 	authRoutes.postLogin

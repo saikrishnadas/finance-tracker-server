@@ -23,6 +23,7 @@ app.use(
 );
 
 const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/user");
 
 // setup route middlewares
 const csrfProtection = csrf({ cookie: true });
@@ -52,6 +53,7 @@ app.post("/testCsrf", csrfProtection, function (req, res) {
 });
 
 app.use(csrfProtection, authRoutes);
+app.use(csrfProtection, userRoutes);
 
 app.use((error, req, res, next) => {
 	res.status(500).json({ error: "Error Occured! Please try after sometime" });

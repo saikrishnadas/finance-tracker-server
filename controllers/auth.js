@@ -16,9 +16,9 @@ exports.postRegister = (req, res, next) => {
 	const confirmPassword = req.body.confirmPassword;
 
 	const errors = validationResult(req);
-	if (!errors.isEmpty()) {
-		return res.status(422).json({ error: errors.array()[0].msg });
-	}
+	// if (!errors.isEmpty()) {
+	// 	return res.status(422).json({ error: errors.array()[0].msg });
+	// }
 
 	User.findOne({ email: email }).then((userDoc) => {
 		if (userDoc) {

@@ -21,4 +21,18 @@ router.post(
 	userRoutes.AddCategory
 );
 
+router.get("/budget", userRoutes.GetBudget);
+
+router.post(
+	"/budget",
+	[
+		body("budget")
+			.isNumeric()
+			.isLength({ min: 1, max: 10 })
+			.withMessage("Budget must be a number")
+			.trim(),
+	],
+	userRoutes.AddBudget
+);
+
 module.exports = router;

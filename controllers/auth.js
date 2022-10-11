@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const { validationResult } = require("express-validator/check");
+const Detail = require("../models/detail");
 // const nodemailer = require("nodemailer");
 // const sendGridTransport = require("nodemailer-sendgrid-transport");
 
@@ -35,6 +36,11 @@ exports.postRegister = (req, res, next) => {
 					return user
 						.save()
 						.then((result) => {
+							const detail = new Detail({
+								userId: user._id,
+								categories: { title: "Entertainment", color: "red" },
+							});
+							detail.save();
 							return res.send("User created!");
 						})
 						.catch((err) => {

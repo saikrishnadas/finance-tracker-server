@@ -15,18 +15,12 @@ const store = new MongoDBStore({
 	uri: MONGODB_URI,
 	collection: "sessions",
 });
-app.use(
-	cors({
-		origin: true,
-		credentials: true,
-	})
-);
 
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 
 // setup route middlewares
-const csrfProtection = csrf({ cookie: true });
+// const csrfProtection = csrf({ cookie: true });
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -43,17 +37,27 @@ app.use(
 // we need this because "cookie" is true in csrfProtection
 app.use(cookieParser());
 
+//Setting CORS
+app.use((req, res, next) => {
+	res.setHeader("Access-Control-Allow-Origin", "*"); //Allows all ('*') origins - change '*' to domain name to allow specfic origins
+	res.setHeader("Access-Control-Allow-MethodS", "GET,POST,PUT,PATCH,DELETE");
+	res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+	next();
+});
+
 //send csrf token
-app.get("/getCsrf", csrfProtection, (req, res, next) => {
-	res.send({ csrfToken: req.csrfToken() });
-});
+// app.get("/getCsrf", csrfProtection, (req, res, next) => {
+// 	res.status(200).json({ csrfToken: req.csrfToken() });
+// });
 
-app.post("/testCsrf", csrfProtection, function (req, res) {
-	res.send("data is being processed");
-});
+// app.post("/testCsrf", csrfProtection, function (req, res) {
+// 	res.status(200).json({ message: "data is being processed" });
+// });
 
-app.use(csrfProtection, authRoutes);
-app.use(csrfProtection, userRoutes);
+// app.use(csrfProtection, authRoutes);
+app.use(authRoutes);
+// app.use(csrfProtection, userRoutes);
+app.use(userRoutes);
 
 app.use((error, req, res, next) => {
 	res.status(500).json({ error: "Error Occured! Please try after sometime" });

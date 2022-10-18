@@ -1,10 +1,11 @@
 const express = require("express");
 const userRoutes = require("../controllers/user");
 const { body } = require("express-validator/check");
+const isAuth = require("../middleware/is-auth");
 
 const router = express.Router();
 
-router.get("/categories", userRoutes.GetCategories);
+router.get("/categories", isAuth, userRoutes.GetCategories);
 
 router.post(
 	"/categories",
@@ -18,10 +19,11 @@ router.post(
 			.trim(),
 		body("color").isString().withMessage("Invalid color").trim(),
 	],
+	isAuth,
 	userRoutes.AddCategory
 );
 
-router.get("/budget", userRoutes.GetBudget);
+router.get("/budget", isAuth, userRoutes.GetBudget);
 
 router.post(
 	"/budget",
@@ -32,9 +34,10 @@ router.post(
 			.withMessage("Budget must be a number")
 			.trim(),
 	],
+	isAuth,
 	userRoutes.AddBudget
 );
 
-router.post("/profile", userRoutes.UploadProfile);
+router.post("/profile", isAuth, userRoutes.UploadProfile);
 
 module.exports = router;

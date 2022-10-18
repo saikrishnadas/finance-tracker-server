@@ -12,6 +12,20 @@ const userSchema = new Schema(
 			type: String,
 			required: true,
 		},
+		budget: {
+			type: Number,
+			require: false,
+		},
+		profile: {
+			type: String,
+			required: false,
+		},
+		categories: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "Category",
+			},
+		],
 	},
 	{ timestamps: true }
 );

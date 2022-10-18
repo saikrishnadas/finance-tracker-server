@@ -1,39 +1,40 @@
-const Detail = require("../models/detail");
+const Category = require("../models/category");
 const User = require("../models/user");
 const { validationResult } = require("express-validator/check");
 
 exports.AddCategory = (req, res, next) => {
-	const title = req.body.title;
-	const color = req.body.color;
-
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		const error = new Error("Validation failed, Entered data is incorrect.");
 		error.statusCode = 422;
 		throw error;
 	}
+	const title = req.body.title;
+	const color = req.body.color;
+	let userId = req.userId;
 
-	Detail.findOne({ userId: "634555e7ada8608d56a05ed0" })
-		.then((user) => {
-			if (user) {
-				Detail.updateOne(
-					{ userId: "634555e7ada8608d56a05ed0" },
-					{
-						$set: {
-							categories: [...user.categories, { title: title, color: color }],
-						},
-					}
-				)
-					.then((result) => {
-						return res.send("Category Added!");
-					})
-					.catch((err) => {
-						throw new Error(err);
+	const category = new Category({
+		userId: req.userId,
+		categories: { title: title, color: color },
+	});
+
+	category
+		.save()
+		.then((result) => {
+			return User.findById(req.userId).then((user) => {
+				console.log("user==>", user);
+				userId = user;
+				user.categories.push(category);
+				return user.save().then((result) => {
+					res.status(201).json({
+						message: "Category created successfully!",
+						category: category,
+						userId: { _id: user._id },
 					});
-			} else {
-				return res.status(403).json({ error: "User does not exsist" });
-			}
+				});
+			});
 		})
+
 		.catch((err) => {
 			if (!err.statusCode) {
 				err.statusCode = 500;
@@ -43,9 +44,10 @@ exports.AddCategory = (req, res, next) => {
 };
 
 exports.GetCategories = (req, res, next) => {
-	Detail.find({ userId: "634555e7ada8608d56a05ed0" })
+	Category.find({ userId: req.userId })
 		.then((user) => {
-			let categories = user[0].categories;
+			console.log(user);
+			let categories = user;
 			return res.send(categories);
 		})
 		.catch((err) => {

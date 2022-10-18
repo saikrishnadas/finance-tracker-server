@@ -1,15 +1,8 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const { validationResult } = require("express-validator/check");
-const Detail = require("../models/detail");
-// const nodemailer = require("nodemailer");
-// const sendGridTransport = require("nodemailer-sendgrid-transport");
-
-// const transporter = nodemailer.createTransport(sendGridTransport({
-// 	auth:{
-// 		api_key:""
-// 	}
-// }))
+const Detail = require("../models/category");
+const jwt = require("jsonwebtoken");
 
 exports.postRegister = (req, res, next) => {
 	const email = req.body.email;
@@ -38,7 +31,6 @@ exports.postRegister = (req, res, next) => {
 						.then((result) => {
 							const detail = new Detail({
 								userId: user._id,
-								categories: { title: "Entertainment", color: "red" },
 							});
 							detail.save();
 							return res.send("User created!");
@@ -74,13 +66,16 @@ exports.postLogin = (req, res, next) => {
 				.compare(password, user.password)
 				.then((doMatch) => {
 					if (doMatch) {
-						req.session.isLoggedIn = true;
-						req.session.user = user;
-						return req.session.save(() => {
-							console.log(req.session);
-							console.log(user);
-							return res.send(req.session.isLoggedIn);
-						});
+						const token = jwt.sign(
+							{ email: email, userId: user._id },
+							"somethingsecret",
+							{
+								expiresIn: "1h",
+							}
+						);
+						return res
+							.status(200)
+							.json({ token: token, userId: user._id.toString() });
 					}
 					return res.status(403).json({ error: "Invalid Password!" });
 				})

@@ -14,7 +14,7 @@ const userSchema = new Schema(
 		},
 		budget: {
 			type: Number,
-			require: false,
+			require: true,
 		},
 		profile: {
 			type: String,

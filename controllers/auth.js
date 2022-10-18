@@ -25,14 +25,11 @@ exports.postRegister = (req, res, next) => {
 					const user = new User({
 						email: email,
 						password: hashedPassword,
+						budget: 0,
 					});
 					return user
 						.save()
 						.then((result) => {
-							const detail = new Detail({
-								userId: user._id,
-							});
-							detail.save();
 							return res.send("User created!");
 						})
 						.catch((err) => {

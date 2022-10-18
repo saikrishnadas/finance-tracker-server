@@ -1,6 +1,7 @@
 const Category = require("../models/category");
 const User = require("../models/user");
 const { validationResult } = require("express-validator/check");
+const mongoose = require("mongoose");
 
 exports.AddCategory = (req, res, next) => {
 	const errors = validationResult(req);
@@ -46,7 +47,6 @@ exports.AddCategory = (req, res, next) => {
 exports.GetCategories = (req, res, next) => {
 	Category.find({ userId: req.userId })
 		.then((user) => {
-			console.log(user);
 			let categories = user;
 			return res.send(categories);
 		})
@@ -59,35 +59,18 @@ exports.GetCategories = (req, res, next) => {
 };
 
 exports.AddBudget = (req, res, next) => {
-	const budget = req.body.budget;
-
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		const error = new Error("Validation failed, Entered data is incorrect.");
 		error.statusCode = 422;
 		throw error;
 	}
-
-	Detail.findOne({ userId: "634555e7ada8608d56a05ed0" })
+	const budget = req.body.budget;
+	User.findByIdAndUpdate(req.userId, { budget: budget })
 		.then((user) => {
-			if (user) {
-				Detail.updateOne(
-					{ userId: "634555e7ada8608d56a05ed0" },
-					{
-						$set: {
-							budget: budget,
-						},
-					}
-				)
-					.then((result) => {
-						return res.send("Budget Updated!");
-					})
-					.catch((err) => {
-						throw new Error(err);
-					});
-			} else {
-				return res.status(403).json({ error: "User does not exsist" });
-			}
+			return res
+				.status(200)
+				.json({ message: "Budget Updated!", budget: budget });
 		})
 		.catch((err) => {
 			if (!err.statusCode) {
@@ -98,10 +81,11 @@ exports.AddBudget = (req, res, next) => {
 };
 
 exports.GetBudget = (req, res, next) => {
-	Detail.find({ userId: "634555e7ada8608d56a05ed0" })
+	User.findById(req.userId)
 		.then((user) => {
-			let budget = user[0].budget;
-			return res.send({ budget: budget });
+			console.log(user);
+			let budget = user.budget;
+			return res.status(200).send({ budget: budget });
 		})
 		.catch((err) => {
 			if (!err.statusCode) {

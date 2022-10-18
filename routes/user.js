@@ -35,4 +35,6 @@ router.post(
 	userRoutes.AddBudget
 );
 
+router.post("/profile", userRoutes.UploadProfile);
+
 module.exports = router;

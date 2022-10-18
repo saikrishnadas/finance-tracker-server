@@ -33,6 +33,7 @@ const fileFilter = (req, file, cb) => {
 
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
+const categoryRoutes = require("./routes/category");
 
 // setup route middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -52,6 +53,7 @@ app.use((req, res, next) => {
 
 app.use(authRoutes);
 app.use(userRoutes);
+app.use(categoryRoutes);
 
 app.use((error, req, res, next) => {
 	const status = error.statusCode || 500;

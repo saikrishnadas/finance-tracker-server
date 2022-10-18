@@ -26,6 +26,7 @@ const userSchema = new Schema(
 				ref: "Category",
 			},
 		],
+		transactions: [{ type: Schema.Types.ObjectId, ref: "Transaction" }],
 	},
 	{ timestamps: true }
 );

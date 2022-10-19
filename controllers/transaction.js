@@ -13,6 +13,7 @@ exports.AddTransaction = (req, res, next) => {
 	const amount = req.body.amount;
 	const category = req.body.category;
 	const date = req.body.date;
+	const type = req.body.type;
 	const note = req.body.note;
 	let userId = req.userId;
 
@@ -22,11 +23,12 @@ exports.AddTransaction = (req, res, next) => {
 			amount: amount,
 			category: category,
 			date: {
-				day: +date.day,
-				month: +date.month,
-				year: +date.month,
+				day: +date.date.split("-")[2],
+				month: +date.date.split("-")[1],
+				year: +date.date.split("-")[0],
 				date: date.date,
 			},
+			type: type,
 			note: note,
 		},
 	});

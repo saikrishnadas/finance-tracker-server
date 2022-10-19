@@ -32,6 +32,7 @@ const transactionSchema = new Schema(
 					required: true,
 				},
 			},
+			type: { type: String, required: true },
 			note: { type: String, required: true },
 		},
 	},

@@ -67,7 +67,7 @@ exports.postLogin = (req, res, next) => {
 							{ email: email, userId: user._id },
 							"somethingsecret",
 							{
-								expiresIn: "1h",
+								expiresIn: "4h",
 							}
 						);
 						return res

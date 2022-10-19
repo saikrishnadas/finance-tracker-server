@@ -12,11 +12,12 @@ exports.AddCategory = (req, res, next) => {
 	}
 	const title = req.body.title;
 	const color = req.body.color;
+	const type = req.body.type;
 	let userId = req.userId;
 
 	const category = new Category({
 		userId: req.userId,
-		categories: { title: title, color: color },
+		categories: { title: title, color: color, type: type },
 	});
 
 	category

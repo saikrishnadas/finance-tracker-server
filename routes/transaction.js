@@ -20,6 +20,6 @@ router.post(
 	transactionRoutes.AddTransaction
 );
 
-router.delete("/transaction", isAuth, transactionRoutes.DeleteCategory);
+router.delete("/transaction", isAuth, transactionRoutes.DeleteTransaction);
 
 module.exports = router;

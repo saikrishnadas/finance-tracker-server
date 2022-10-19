@@ -71,3 +71,15 @@ exports.DeleteCategory = (req, res, next) => {
 			next(err);
 		});
 };
+
+exports.GetCategoryMetrics = (req, res, next) => {
+	let filteredArray;
+	Category.find({ userId: req.userId }).then((categories) => {
+		Transaction.find({ userId: req.userId }).then((transactions) => {
+			filteredArray = transactions.filter((value) => {
+				return value.transactions.category == categories.categories.title;
+			});
+		});
+	});
+	return res.status(200).json({ allCategories: filteredArray });
+};

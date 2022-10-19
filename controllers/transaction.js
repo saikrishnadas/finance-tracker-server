@@ -63,7 +63,7 @@ exports.GetTransactions = (req, res, next) => {
 		});
 };
 
-exports.DeleteCategory = (req, res, next) => {
+exports.DeleteTransaction = (req, res, next) => {
 	const transactionId = req.body.transactionId;
 	Transaction.findByIdAndDelete(transactionId)
 		.then((result) => {

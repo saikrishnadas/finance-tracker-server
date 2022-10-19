@@ -21,7 +21,12 @@ exports.AddTransaction = (req, res, next) => {
 		transactions: {
 			amount: amount,
 			category: category,
-			date: date,
+			date: {
+				day: +date.day,
+				month: +date.month,
+				year: +date.month,
+				date: date.date,
+			},
 			note: note,
 		},
 	});
@@ -50,7 +55,9 @@ exports.AddTransaction = (req, res, next) => {
 };
 
 exports.GetTransactions = (req, res, next) => {
-	Transaction.find({ userId: req.userId })
+	Transaction.find({
+		userId: req.userId,
+	})
 		.then((user) => {
 			let transactions = user;
 			return res.status(200).json({ transactions: transactions });

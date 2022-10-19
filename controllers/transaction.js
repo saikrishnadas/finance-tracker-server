@@ -62,3 +62,17 @@ exports.GetTransactions = (req, res, next) => {
 			next(err);
 		});
 };
+
+exports.DeleteCategory = (req, res, next) => {
+	const transactionId = req.body.transactionId;
+	Transaction.findByIdAndDelete(transactionId)
+		.then((result) => {
+			return res.status(200).json({ message: "Transaction deleted!" });
+		})
+		.catch((err) => {
+			if (!err.statusCode) {
+				err.statusCode = 500;
+			}
+			next(err);
+		});
+};

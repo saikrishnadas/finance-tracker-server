@@ -84,3 +84,7 @@ exports.GetCategoryMetrics = (req, res, next) => {
 	});
 	return res.status(200).json({ allCategories: filteredArray });
 };
+
+exports.Test = (req, res, next) => {
+	return res.status(200).json({ data: "Hello" });
+};

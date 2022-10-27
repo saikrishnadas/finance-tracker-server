@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const path = require("path");
 const multer = require("multer");
+const helmet = require("helmet");
+const compression = require("compression");
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -37,6 +39,8 @@ const categoryRoutes = require("./routes/category");
 const transactionRoutes = require("./routes/transaction");
 
 // setup route middlewares
+app.use(helmet());
+app.use(compression());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(
@@ -66,7 +70,7 @@ app.use((error, req, res, next) => {
 mongoose
 	.connect(MONGODB_URI)
 	.then(() => {
-		app.listen(8080);
+		app.listen(process.env.PORT || 8080);
 	})
 	.catch((err) => {
 		res

@@ -1,9 +1,10 @@
 const Category = require("../models/category");
+const Transaction = require("../models/transaction");
 const User = require("../models/user");
 const { validationResult } = require("express-validator/check");
 const mongoose = require("mongoose");
 
-exports.AddCategory = (req, res, next) => {
+exports.AddCategory = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		const error = new Error("Validation failed, Entered data is incorrect.");
@@ -19,36 +20,16 @@ exports.AddCategory = (req, res, next) => {
 		userId: req.userId,
 		categories: { title: title, color: color, type: type },
 	});
-
-	category
-		.save()
-		.then((result) => {
-			return User.findById(req.userId).then((user) => {
-				console.log("user==>", user);
-				userId = user;
-				user.categories.push(category);
-				return user.save().then((result) => {
-					res.status(201).json({
-						message: "Category created successfully!",
-						category: category,
-						userId: { _id: user._id },
-					});
-				});
-			});
-		})
-
-		.catch((err) => {
-			if (!err.statusCode) {
-				err.statusCode = 500;
-			}
-			next(err);
-		});
-};
-
-exports.GetCategories = async (req, res, next) => {
 	try {
-		const categories = await Category.find({ userId: req.userId });
-		return res.send(categories);
+		await category.save();
+		let user = await User.findById(req.userId);
+		user.categories.push(category);
+		await user.save();
+		res.status(201).json({
+			message: "Category created successfully!",
+			category: category,
+			userId: { _id: user._id },
+		});
 	} catch (err) {
 		if (!err.statusCode) {
 			err.statusCode = 500;
@@ -57,30 +38,46 @@ exports.GetCategories = async (req, res, next) => {
 	}
 };
 
-exports.DeleteCategory = (req, res, next) => {
-	const categoryId = req.body.categoryId;
-	Category.findByIdAndDelete(categoryId)
-		.then((result) => {
-			return res.status(200).json({ message: "Category deleted!" });
-		})
-		.catch((err) => {
-			if (!err.statusCode) {
-				err.statusCode = 500;
-			}
-			next(err);
-		});
+exports.GetCategories = async (req, res, next) => {
+	try {
+		const categories = await Category.find({ userId: req.userId });
+		res.status(200).json({ categories: categories });
+	} catch (err) {
+		if (!err.statusCode) {
+			err.statusCode = 500;
+		}
+		next(err);
+	}
 };
 
-exports.GetCategoryMetrics = (req, res, next) => {
-	let filteredArray;
-	Category.find({ userId: req.userId }).then((categories) => {
-		Transaction.find({ userId: req.userId }).then((transactions) => {
-			filteredArray = transactions.filter((value) => {
-				return value.transactions.category == categories.categories.title;
-			});
+exports.DeleteCategory = async (req, res, next) => {
+	const categoryId = req.body.categoryId;
+	try {
+		await Category.findByIdAndDelete(categoryId);
+		res.status(200).json({ message: "Category deleted!" });
+	} catch (err) {
+		if (!err.statusCode) {
+			err.statusCode = 500;
+		}
+		next(err);
+	}
+};
+
+exports.GetCategoryMetrics = async (req, res, next) => {
+	try {
+		let filteredArray;
+		const categories = await Category.find({ userId: req.userId });
+		const transactions = await Transaction.find({ userId: req.userId });
+		filteredArray = await transactions.filter((value) => {
+			return value.transactions.category == categories.categories.title;
 		});
-	});
-	return res.status(200).json({ allCategories: filteredArray });
+		res.status(200).json({ allCategories: filteredArray });
+	} catch (err) {
+		if (!err.statusCode) {
+			err.statusCode = 500;
+		}
+		next(err);
+	}
 };
 
 exports.Test = (req, res, next) => {

@@ -45,18 +45,16 @@ exports.AddCategory = (req, res, next) => {
 		});
 };
 
-exports.GetCategories = (req, res, next) => {
-	Category.find({ userId: req.userId })
-		.then((user) => {
-			let categories = user;
-			return res.send(categories);
-		})
-		.catch((err) => {
-			if (!err.statusCode) {
-				err.statusCode = 500;
-			}
-			next(err);
-		});
+exports.GetCategories = async (req, res, next) => {
+	try {
+		const categories = await Category.find({ userId: req.userId });
+		return res.send(categories);
+	} catch (err) {
+		if (!err.statusCode) {
+			err.statusCode = 500;
+		}
+		next(err);
+	}
 };
 
 exports.DeleteCategory = (req, res, next) => {

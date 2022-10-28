@@ -57,7 +57,7 @@ exports.postLogin = (req, res, next) => {
 	User.findOne({ email: email })
 		.then((user) => {
 			if (!user) {
-				return res.status(403).json({ error: "User does not exist!" });
+				return res.status(401).json({ error: "User does not exist!" });
 			}
 			bcrypt
 				.compare(password, user.password)
@@ -74,7 +74,7 @@ exports.postLogin = (req, res, next) => {
 							.status(200)
 							.json({ token: token, userId: user._id.toString() });
 					}
-					return res.status(403).json({ error: "Invalid Password!" });
+					return res.status(401).json({ error: "Invalid Password!" });
 				})
 				.catch((err) => {
 					throw new Error(err);

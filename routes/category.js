@@ -27,6 +27,6 @@ router.delete("/categories", isAuth, categoryRoutes.DeleteCategory);
 
 router.get("/metrics", isAuth, categoryRoutes.GetCategoryMetrics);
 
-router.get("/test", categoryRoutes.Test);
+router.get("/test", isAuth, categoryRoutes.Test);
 
 module.exports = router;

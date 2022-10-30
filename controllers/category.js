@@ -81,5 +81,5 @@ exports.GetCategoryMetrics = async (req, res, next) => {
 };
 
 exports.Test = (req, res, next) => {
-	return res.status(200).json({ data: "Hello" });
+	return res.status(200).json({ data: "This is sai" });
 };

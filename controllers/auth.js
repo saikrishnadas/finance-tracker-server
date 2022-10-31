@@ -65,14 +65,16 @@ exports.postLogin = (req, res, next) => {
 					if (doMatch) {
 						const token = jwt.sign(
 							{ email: email, userId: user._id },
-							"somethingsecret",
+							process.env.SESSION_SECRET,
 							{
-								expiresIn: "4h",
+								expiresIn: "3d",
 							}
 						);
-						return res
-							.status(200)
-							.json({ token: token, userId: user._id.toString() });
+						return res.status(200).json({
+							token: token,
+							userId: user._id.toString(),
+							email: email,
+						});
 					}
 					return res.status(401).json({ error: "Invalid Password!" });
 				})

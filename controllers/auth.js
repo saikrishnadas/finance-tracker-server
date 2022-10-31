@@ -29,8 +29,19 @@ exports.postRegister = (req, res, next) => {
 					});
 					return user
 						.save()
-						.then((result) => {
-							return res.send("User created!");
+						.then((user) => {
+							const token = jwt.sign(
+								{ email: user.email, userId: user._id },
+								process.env.SESSION_SECRET,
+								{
+									expiresIn: "3d",
+								}
+							);
+							return res.status(200).json({
+								token: token,
+								userId: user._id.toString(),
+								email: email,
+							});
 						})
 						.catch((err) => {
 							throw new Error(err);
